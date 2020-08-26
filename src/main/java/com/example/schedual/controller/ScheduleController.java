@@ -22,6 +22,6 @@ public class ScheduleController {
     @PostMapping("/schedule")
     public void schedule(@RequestBody Schedule schedule)
         throws ParseException {
-        scheduleService.schedule(schedule.getDate(),schedule.getTime());
+        scheduleService.scheduleToDb(schedule.getDate(),schedule.getTime());
     }
 }

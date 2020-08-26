@@ -24,15 +24,37 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public void schedule(String date, String time) throws ParseException {
+    public void scheduleToDb(String date, String time) throws ParseException {
         Schedule schedule = new Schedule();
         schedule.setDate(date);
         schedule.setTime(time);
         scheduleRepository.save(schedule);
+        schedule(date, time);
+    }
+
+    public void schedule(String date, String time) throws ParseException {
+        Schedule schedule = new Schedule();
+        schedule.setDate(date);
+        schedule.setTime(time);
         ConcurrentTaskScheduler concurrentTaskScheduler = new ConcurrentTaskScheduler();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         concurrentTaskScheduler
-            .schedule(printMsg("ring"), new Date(simpleDateFormat.parse(date).getTime() + Integer.valueOf(time) * 1000));
+            .schedule(printMsg("ring"), new Date(simpleDateFormat.parse(date).getTime()
+                + getMinuteToMillisecond(time)
+                + getHourToMillisecond(time)
+                + getSecondToMillisecond(time)));
+    }
+
+    private int getSecondToMillisecond(String time) {
+        return Integer.valueOf(time.substring(6, 8)) * 1000;
+    }
+
+    private int getMinuteToMillisecond(String time) {
+        return Integer.valueOf(time.substring(3, 5)) * 60 * 1000;
+    }
+
+    private int getHourToMillisecond(String time){
+        return Integer.valueOf(time.substring(0, 2)) * 60 * 60 * 1000;
     }
 
     public Runnable printMsg(String msg) {

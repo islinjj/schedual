@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface ScheduleService {
-    public void schedule(String date,String time) throws ParseException;
+    void scheduleToDb(String date, String time) throws ParseException;
 }
