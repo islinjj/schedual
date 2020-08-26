@@ -6,6 +6,7 @@ import com.example.schedual.service.ScheduleService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +19,13 @@ import org.springframework.stereotype.Service;
 public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final RabbitTemplate rabbitTemplate;
 
     public ScheduleServiceImpl(
-        ScheduleRepository scheduleRepository) {
+        ScheduleRepository scheduleRepository,
+        RabbitTemplate rabbitTemplate) {
         this.scheduleRepository = scheduleRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public void scheduleToDb(String date, String time) throws ParseException {
@@ -61,7 +65,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                System.out.println("Ring...." + msg);
+                System.out.println("Send to MQ...." + msg);
+                rabbitTemplate.convertAndSend("DirectRouting", "DirectExchange", msg);
             }
         };
 
