@@ -1,5 +1,6 @@
 package com.example.schedual.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,12 +15,15 @@ import javax.persistence.Table;
 @Table(name = "schedule")
 @Entity
 public class Schedule {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String date;
     private String time;
     private boolean exec;
+    @Column(name = "exec_time")
+    private String execTime;
 
     public boolean isExec() {
         return exec;
@@ -51,5 +55,13 @@ public class Schedule {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getExecTime() {
+        return execTime;
+    }
+
+    public void setExecTime(String execTime) {
+        this.execTime = execTime;
     }
 }

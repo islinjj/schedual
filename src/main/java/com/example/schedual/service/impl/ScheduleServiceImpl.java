@@ -37,7 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         ConcurrentTaskScheduler concurrentTaskScheduler = new ConcurrentTaskScheduler();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         concurrentTaskScheduler
-            .schedule(printMsg("ring",id), new Date(simpleDateFormat.parse(schedule.getDate()).getTime()
+            .schedule(sendQueue("ring",id), new Date(simpleDateFormat.parse(schedule.getDate()).getTime()
                 + getMinuteToMillisecond(schedule.getTime())
                 + getHourToMillisecond(schedule.getTime())
                 + getSecondToMillisecond(schedule.getTime())));
@@ -55,7 +55,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return Integer.valueOf(time.substring(0, 2)) * 60 * 60 * 1000;
     }
 
-    public Runnable printMsg(String msg,Integer id) {
+    public Runnable sendQueue(String msg,Integer id) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -63,6 +63,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 rabbitTemplate.convertAndSend("DirectExchange", "DirectRouting", msg);
                 Schedule schedule = scheduleRepository.findById(id).orElse(null);
                 schedule.setExec(true);
+                schedule.setExecTime(new Date().toString());
                 scheduleRepository.save(schedule);
             }
         };

@@ -23,7 +23,7 @@ public class ScheduledComponent {
     private ScheduleRepository scheduleRepository;
 
     @PostConstruct
-    public void schedule() throws ParseException {
+    public void scheduleAfterStartProject() throws ParseException {
         List<Schedule> schedules = scheduleRepository.findAll();
         for (Schedule schedule : schedules) {
             if (!schedule.isExec()) {
