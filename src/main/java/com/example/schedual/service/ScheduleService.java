@@ -1,5 +1,6 @@
 package com.example.schedual.service;
 
+import com.example.schedual.entity.Schedule;
 import java.text.ParseException;
 import org.springframework.stereotype.Service;
 
@@ -10,5 +11,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface ScheduleService {
-    void scheduleToDb(String date, String time) throws ParseException;
+    void scheduleToDb(Schedule schedule) throws ParseException;
 }

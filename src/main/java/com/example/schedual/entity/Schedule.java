@@ -19,6 +19,15 @@ public class Schedule {
     private Integer id;
     private String date;
     private String time;
+    private boolean exec;
+
+    public boolean isExec() {
+        return exec;
+    }
+
+    public void setExec(boolean exec) {
+        this.exec = exec;
+    }
 
     public String getDate() {
         return date;

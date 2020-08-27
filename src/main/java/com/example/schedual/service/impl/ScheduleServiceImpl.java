@@ -28,25 +28,19 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void scheduleToDb(String date, String time) throws ParseException {
-        Schedule schedule = new Schedule();
-        schedule.setDate(date);
-        schedule.setTime(time);
-        scheduleRepository.save(schedule);
-        schedule(date, time);
+    public void scheduleToDb(Schedule schedule) throws ParseException {
+        Schedule save = scheduleRepository.save(schedule);
+        schedule(schedule,save.getId());
     }
 
-    public void schedule(String date, String time) throws ParseException {
-        Schedule schedule = new Schedule();
-        schedule.setDate(date);
-        schedule.setTime(time);
+    public void schedule(Schedule schedule,Integer id) throws ParseException {
         ConcurrentTaskScheduler concurrentTaskScheduler = new ConcurrentTaskScheduler();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         concurrentTaskScheduler
-            .schedule(printMsg("ring"), new Date(simpleDateFormat.parse(date).getTime()
-                + getMinuteToMillisecond(time)
-                + getHourToMillisecond(time)
-                + getSecondToMillisecond(time)));
+            .schedule(printMsg("ring",id), new Date(simpleDateFormat.parse(schedule.getDate()).getTime()
+                + getMinuteToMillisecond(schedule.getTime())
+                + getHourToMillisecond(schedule.getTime())
+                + getSecondToMillisecond(schedule.getTime())));
     }
 
     private int getSecondToMillisecond(String time) {
@@ -61,12 +55,15 @@ public class ScheduleServiceImpl implements ScheduleService {
         return Integer.valueOf(time.substring(0, 2)) * 60 * 60 * 1000;
     }
 
-    public Runnable printMsg(String msg) {
+    public Runnable printMsg(String msg,Integer id) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 System.out.println("Send to MQ...." + msg);
                 rabbitTemplate.convertAndSend("DirectRouting", "DirectExchange", msg);
+                Schedule schedule = scheduleRepository.findById(id).orElse(null);
+                schedule.setExec(true);
+                scheduleRepository.save(schedule);
             }
         };
 

@@ -26,7 +26,7 @@ public class ScheduledComponent {
     public void schedule() throws ParseException {
         List<Schedule> schedules = scheduleRepository.findAll();
         for (Schedule schedule:schedules){
-            scheduleService.schedule(schedule.getDate(),schedule.getTime());
+            scheduleService.schedule(schedule,schedule.getId());
         }
     }
 }
