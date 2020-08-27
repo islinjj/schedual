@@ -60,7 +60,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             @Override
             public void run() {
                 System.out.println("Send to MQ...." + msg);
-                rabbitTemplate.convertAndSend("DirectRouting", "DirectExchange", msg);
+                rabbitTemplate.convertAndSend("DirectExchange", "DirectRouting", msg);
                 Schedule schedule = scheduleRepository.findById(id).orElse(null);
                 schedule.setExec(true);
                 scheduleRepository.save(schedule);

@@ -25,8 +25,10 @@ public class ScheduledComponent {
     @PostConstruct
     public void schedule() throws ParseException {
         List<Schedule> schedules = scheduleRepository.findAll();
-        for (Schedule schedule:schedules){
-            scheduleService.schedule(schedule,schedule.getId());
+        for (Schedule schedule : schedules) {
+            if (!schedule.isExec()) {
+                scheduleService.schedule(schedule, schedule.getId());
+            }
         }
     }
 }
