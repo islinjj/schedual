@@ -67,7 +67,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 scheduleRepository.save(schedule);
             }
         };
-
         return runnable;
     }
 }
