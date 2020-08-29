@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,12 +20,19 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final RabbitTemplate rabbitTemplate;
+    ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 
     public ScheduleServiceImpl(
         ScheduleRepository scheduleRepository,
         RabbitTemplate rabbitTemplate) {
         this.scheduleRepository = scheduleRepository;
         this.rabbitTemplate = rabbitTemplate;
+        create();
+    }
+
+    public void create() {
+        threadPoolTaskScheduler.setPoolSize(10);
+        threadPoolTaskScheduler.initialize();
     }
 
     public void scheduleToDb(Schedule schedule) throws ParseException {
@@ -34,9 +41,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public void schedule(Schedule schedule,Integer id) throws ParseException {
-        ConcurrentTaskScheduler concurrentTaskScheduler = new ConcurrentTaskScheduler();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        concurrentTaskScheduler
+        threadPoolTaskScheduler
             .schedule(sendQueue("ring",id), new Date(simpleDateFormat.parse(schedule.getDate()).getTime()
                 + getMinuteToMillisecond(schedule.getTime())
                 + getHourToMillisecond(schedule.getTime())
@@ -59,7 +65,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                System.out.println("Send to MQ...." + msg);
+                System.out.println("Send to MQ...." + msg+" "+Thread.currentThread().getName());
                 rabbitTemplate.convertAndSend("DirectExchange", "DirectRouting", msg);
                 Schedule schedule = scheduleRepository.findById(id).orElse(null);
                 schedule.setExec(true);
