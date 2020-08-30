@@ -19,8 +19,10 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String date;
-    private String time;
+    @Column(name = "appointment_time")
+    private String appointmentDate;
+    @Column(name = "schedule_time")
+    private String scheduleTime;
     private boolean exec;
     @Column(name = "exec_time")
     private String execTime;
@@ -33,20 +35,20 @@ public class Schedule {
         this.exec = exec;
     }
 
-    public String getDate() {
-        return date;
+    public String getAppointmentDate() {
+        return appointmentDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setAppointmentDate(String appointmentDate) {
+        this.appointmentDate = appointmentDate;
     }
 
-    public String getTime() {
-        return time;
+    public String getScheduleTime() {
+        return scheduleTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setScheduleTime(String scheduleTime) {
+        this.scheduleTime = scheduleTime;
     }
 
     public Integer getId() {

@@ -45,10 +45,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         threadPoolTaskScheduler
             .schedule(sendQueue("ring", id),
-                new Date(simpleDateFormat.parse(schedule.getDate()).getTime()
-                    - getMinuteToMillisecond(schedule.getTime())
-                    - getHourToMillisecond(schedule.getTime())
-                    - getSecondToMillisecond(schedule.getTime())));
+                new Date(simpleDateFormat.parse(schedule.getAppointmentDate()).getTime()
+                    - getMinuteToMillisecond(schedule.getScheduleTime())
+                    - getHourToMillisecond(schedule.getScheduleTime())
+                    - getSecondToMillisecond(schedule.getScheduleTime())));
     }
 
     private int getSecondToMillisecond(String time) {
