@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class ScheduleServiceImpl implements ScheduleService {
 
     private final int POOL_SIZE_NUMBER = 10;
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     private final ScheduleRepository scheduleRepository;
     private final RabbitTemplate rabbitTemplate;
     ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
@@ -41,17 +42,17 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public void scheduleToDb(Schedule schedule) throws ParseException {
-        Schedule save = scheduleRepository.save(schedule);
-        schedule(schedule, save.getId());
+        schedule = scheduleRepository.save(schedule);
+        schedule(schedule);
     }
 
-    public void schedule(Schedule schedule, Integer id) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    public void schedule(Schedule schedule) throws ParseException {
         threadPoolTaskScheduler
-            .schedule(sendQueue("ring",id), new Date(simpleDateFormat.parse(schedule.getDate()).getTime()
-                - getMinuteToMillisecond(schedule.getTime())
-                - getHourToMillisecond(schedule.getTime())
-                - getSecondToMillisecond(schedule.getTime())));
+            .schedule(sendQueue("ring", schedule.getId()),
+                new Date(simpleDateFormat.parse(schedule.getAppointmentDate()).getTime()
+                    - getMinuteToMillisecond(schedule.getScheduleTime())
+                    - getHourToMillisecond(schedule.getScheduleTime())
+                    - getSecondToMillisecond(schedule.getScheduleTime())));
     }
 
     private int getSecondToMillisecond(String time) {
@@ -74,9 +75,9 @@ public class ScheduleServiceImpl implements ScheduleService {
                 rabbitTemplate.convertAndSend("DirectExchange", "DirectRouting", msg);
                 Schedule schedule = scheduleRepository.findById(id).orElse(null);
                 schedule.setExec(true);
-                schedule.setExecTime(new Date().toString());
+                schedule.setExecTime(simpleDateFormat.format(new Date()));
                 scheduleRepository.save(schedule);
-                mailComponent.sendSimpleMail("1413537501@qq.com","提箱通知","请于"+schedule.getDate()+"提取集装箱");
+//                mailComponent.sendSimpleMail("1413537501@qq.com","提箱通知","请于"+schedule.getExecTime()+"提取集装箱");
             }
         };
         return runnable;

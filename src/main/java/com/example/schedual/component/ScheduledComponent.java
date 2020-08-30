@@ -27,7 +27,7 @@ public class ScheduledComponent {
         List<Schedule> schedules = scheduleRepository.findAll();
         for (Schedule schedule : schedules) {
             if (!schedule.isExec()) {
-                scheduleService.schedule(schedule, schedule.getId());
+                scheduleService.schedule(schedule);
             }
         }
     }
