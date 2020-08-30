@@ -44,9 +44,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         threadPoolTaskScheduler
             .schedule(sendQueue("ring",id), new Date(simpleDateFormat.parse(schedule.getDate()).getTime()
-                + getMinuteToMillisecond(schedule.getTime())
-                + getHourToMillisecond(schedule.getTime())
-                + getSecondToMillisecond(schedule.getTime())));
+                - getMinuteToMillisecond(schedule.getTime())
+                - getHourToMillisecond(schedule.getTime())
+                - getSecondToMillisecond(schedule.getTime())));
     }
 
     private int getSecondToMillisecond(String time) {
