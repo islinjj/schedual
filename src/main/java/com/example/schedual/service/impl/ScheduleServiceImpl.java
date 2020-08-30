@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
+    private final int POOL_SIZE_NUMBER = 10;
     private final ScheduleRepository scheduleRepository;
     private final RabbitTemplate rabbitTemplate;
     ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
@@ -31,7 +32,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public void create() {
-        threadPoolTaskScheduler.setPoolSize(10);
+        threadPoolTaskScheduler.setPoolSize(POOL_SIZE_NUMBER);
         threadPoolTaskScheduler.initialize();
     }
 
