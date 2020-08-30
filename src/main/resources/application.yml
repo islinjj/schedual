@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: "jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf-8"
+    url: "jdbc:mysql://localhost:3306/schedual?useUnicode=true&characterEncoding=utf-8"
     username: root
-    password: Wa~!@345
+    password: 123456
     jpa:
       database: MYSQL
       generate-ddl: true
@@ -33,5 +33,15 @@ spring:
         acknowledge-mode: manual
         #限流（海量数据，同时只能过来一条）
         prefetch: 1
+  mail:
+    host: smtp.qq.com
+    username: 1413537501@qq.com
+    password:  oztocpchpwhdjcgj
+    properties.mail.smtp.port: 587
+    from: 1413537501@qq.com
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.ssl.enable: false
+    default-encoding: utf-8
 server:
   port: 7070

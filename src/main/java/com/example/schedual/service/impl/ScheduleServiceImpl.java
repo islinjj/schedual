@@ -1,5 +1,6 @@
 package com.example.schedual.service.impl;
 
+import com.example.schedual.component.MailComponent;
 import com.example.schedual.entity.Schedule;
 import com.example.schedual.repository.ScheduleRepository;
 import com.example.schedual.service.ScheduleService;
@@ -7,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final RabbitTemplate rabbitTemplate;
     ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+    @Autowired
+    MailComponent mailComponent;
 
     public ScheduleServiceImpl(
         ScheduleRepository scheduleRepository,
@@ -71,6 +75,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 schedule.setExec(true);
                 schedule.setExecTime(new Date().toString());
                 scheduleRepository.save(schedule);
+                mailComponent.sendSimpleMail("1413537501@qq.com","提箱通知","请于"+schedule.getDate()+"提取集装箱");
             }
         };
         return runnable;
